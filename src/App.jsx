@@ -8,6 +8,7 @@ import Dashboard from './paginas/Dashboard'
 import Peliculas from './paginas/Peliculas'
 import Funciones from './paginas/Funciones'
 import Sedes from './paginas/Sedes'
+import Salas from './paginas/Salas'
 import Usuarios from './paginas/Usuarios'
 import Reservas from './paginas/Reservas'
 
@@ -35,6 +36,11 @@ function AppRoutes() {
       <Route path="/sedes" element={
         <ProtectedRoute>
           <DashboardLayout><Sedes /></DashboardLayout>
+        </ProtectedRoute>
+      }/>
+      <Route path="/salas" element={
+        <ProtectedRoute>
+          <DashboardLayout><Salas /></DashboardLayout>
         </ProtectedRoute>
       }/>
       <Route path="/reservas" element={

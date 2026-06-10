@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { to: '/peliculas', label: 'Películas',  icon: '🎬' },
   { to: '/funciones', label: 'Funciones',  icon: '📅' },
   { to: '/sedes',     label: 'Sedes',      icon: '🏢' },
+  { to: '/salas',     label: 'Salas',      icon: '🎭' },
   { to: '/usuarios',  label: 'Usuarios',   icon: '👤', adminOnly: true },
   { to: '/reservas',  label: 'Reservas',   icon: '🎟️' },
 ]

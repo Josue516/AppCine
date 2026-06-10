@@ -2,6 +2,7 @@ import { useAsync } from './useAsync'
 import { peliculasApi } from '../api/peliculas'
 import { funcionesApi } from '../api/funciones'
 import { sedesApi } from '../api/sedes'
+import { salasApi } from '../api/salas'
 import { usuariosApi } from '../api/usuarios'
 import { reservasApi } from '../api/reservas'
 
@@ -15,6 +16,10 @@ export function useFunciones() {
 
 export function useSedes() {
   return useAsync(() => sedesApi.getAll())
+}
+
+export function useSalas() {
+  return useAsync(() => salasApi.getAll())
 }
 
 export function useUsuarios(rol) {
