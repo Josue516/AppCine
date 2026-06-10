@@ -1,43 +1,64 @@
-import { useEffect, useState } from "react";
-import { supabase } from "./servicios/supabase";
+import { HashRouter, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
+import ProtectedRoute from './componentes/layout/ProtectedRoute'
+import DashboardLayout from './componentes/layout/DashboardLayout'
 
-function App() {
+import Login from './paginas/Login'
+import Dashboard from './paginas/Dashboard'
+import Peliculas from './paginas/Peliculas'
+import Funciones from './paginas/Funciones'
+import Sedes from './paginas/Sedes'
+import Usuarios from './paginas/Usuarios'
+import Reservas from './paginas/Reservas'
 
-  const [peliculas, setPeliculas] = useState([]);
-
-  useEffect(() => {
-
-    const cargarPeliculas = async () => {
-
-      const { data, error } = await supabase
-        .from('peliculas')
-        .select('*');
-
-      console.log("DATA:", data);
-      console.log("ERROR:", error);
-
-      if (!error) {
-        setPeliculas(data);
-      }
-    };
-
-    cargarPeliculas();
-
-  }, []);
-
+function AppRoutes() {
   return (
-    <div>
-      <h1>Películas</h1>
+    <Routes>
+      <Route path="/login" element={<Login />} />
 
-      {peliculas.map((p) => (
-        <div key={p.id}>
-          <h3>{p.titulo}</h3>
-          <p>{p.director}</p>
-          <p>{p.anio}</p>
-        </div>
-      ))}
-    </div>
-  );
+      {/* Rutas protegidas — cualquier usuario autenticado */}
+      <Route path="/" element={
+        <ProtectedRoute>
+          <DashboardLayout><Dashboard /></DashboardLayout>
+        </ProtectedRoute>
+      }/>
+      <Route path="/peliculas" element={
+        <ProtectedRoute>
+          <DashboardLayout><Peliculas /></DashboardLayout>
+        </ProtectedRoute>
+      }/>
+      <Route path="/funciones" element={
+        <ProtectedRoute>
+          <DashboardLayout><Funciones /></DashboardLayout>
+        </ProtectedRoute>
+      }/>
+      <Route path="/sedes" element={
+        <ProtectedRoute>
+          <DashboardLayout><Sedes /></DashboardLayout>
+        </ProtectedRoute>
+      }/>
+      <Route path="/reservas" element={
+        <ProtectedRoute>
+          <DashboardLayout><Reservas /></DashboardLayout>
+        </ProtectedRoute>
+      }/>
+
+      {/* Solo admins */}
+      <Route path="/usuarios" element={
+        <ProtectedRoute adminOnly>
+          <DashboardLayout><Usuarios /></DashboardLayout>
+        </ProtectedRoute>
+      }/>
+    </Routes>
+  )
 }
 
-export default App;
+export default function App() {
+  return (
+    <AuthProvider>
+      <HashRouter>
+        <AppRoutes />
+      </HashRouter>
+    </AuthProvider>
+  )
+}
