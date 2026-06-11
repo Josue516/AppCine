@@ -1,64 +1,21 @@
-import { supabase } from './supabase'
+import { http } from './http'
 
 export const sedesApi = {
-  async getAll() {
-    const { data, error } = await supabase
-      .from('sedes')
-      .select('*, salas(id, nombre, capacidad, tipo_sala, activo)')
-      .order('nombre')
-    if (error) throw error
-    return data
-  },
+  // Sedes
+  getAll()         { return http.get('/api/sedes') },
+  getById(id)      { return http.get(`/api/sedes/${id}`) },
+  getActivas()     { return http.get('/api/sedes/activas') },
+  create(sede)     { return http.post('/api/sedes', sede) },
+  update(id, sede) { return http.put(`/api/sedes/${id}`, sede) },
+  getAllConSalas() { return http.get('/api/sedes/con-salas') },
+  delete(id)       { return http.delete(`/api/sedes/${id}`) },
 
-  async getById(id) {
-    const { data, error } = await supabase
-      .from('sedes')
-      .select('*, salas(*)')
-      .eq('id', id)
-      .single()
-    if (error) throw error
-    return data
-  },
-
-  async create(sede) {
-    const { data, error } = await supabase
-      .from('sedes')
-      .insert([sede])
-      .select()
-      .single()
-    if (error) throw error
-    return data
-  },
-
-  async update(id, sede) {
-    const { data, error } = await supabase
-      .from('sedes')
-      .update(sede)
-      .eq('id', id)
-      .select()
-      .single()
-    if (error) throw error
-    return data
-  },
-
-  async createSala(sala) {
-    const { data, error } = await supabase
-      .from('salas')
-      .insert([sala])
-      .select()
-      .single()
-    if (error) throw error
-    return data
-  },
-
-  async updateSala(id, sala) {
-    const { data, error } = await supabase
-      .from('salas')
-      .update(sala)
-      .eq('id', id)
-      .select()
-      .single()
-    if (error) throw error
-    return data
-  },
+  // Salas
+  getAllSalas()            { return http.get('/api/salas') },
+  getSalaById(id)         { return http.get(`/api/salas/${id}`) },
+  getSalasPorSede(sedeId) { return http.get(`/api/salas/sede/${sedeId}`) },
+  getSalasActivas()       { return http.get('/api/salas/activas') },
+  createSala(sala)        { return http.post('/api/salas', sala) },
+  updateSala(id, sala)    { return http.put(`/api/salas/${id}`, sala) },
+  deleteSala(id)          { return http.delete(`/api/salas/${id}`) },
 }

@@ -1,73 +1,15 @@
-import { supabase } from './supabase'
-import { generosApi } from './generos'
+import { http } from './http'
 
 export const peliculasApi = {
-  async getAll() {
-    const { data, error } = await supabase
-      .from('peliculas')
-      .select('*')
-      .order('created_at', { ascending: false })
-    if (error) throw error
-    return data
-  },
-
-  async getById(id) {
-    const { data, error } = await supabase
-      .from('peliculas')
-      .select('*, pelicula_generos(genero_id, generos(nombre))')
-      .eq('id', id)
-      .single()
-    if (error) throw error
-    return data
-  },
-
-  async create(pelicula) {
-  const { generoIds = [], ...peliculaData } = pelicula
-
-  const { data, error } = await supabase
-    .from('peliculas')
-    .insert([peliculaData])
-    .select()
-    .single()
-
-  if (error) throw error
-
-  await generosApi.setGenerosPelicula(
-    data.id,
-    generoIds
-  )
-
-  return data
-},
-
-  async update(id, pelicula) {
-  const { generoIds = [], ...peliculaData } = pelicula
-
-  const { data, error } = await supabase
-    .from('peliculas')
-    .update(peliculaData)
-    .eq('id', id)
-    .select()
-    .single()
-
-  if (error) throw error
-
-  await generosApi.setGenerosPelicula(
-    id,
-    generoIds
-  )
-
-  return data
-},
+  getAll()        { return http.get('/api/peliculas') },
+  getById(id)     { return http.get(`/api/peliculas/${id}`) },
+  getCartelera()  { return http.get('/api/peliculas/cartelera') },
+  create(pelicula){ return http.post('/api/peliculas', pelicula) },
+  update(id, pelicula) { return http.put(`/api/peliculas/${id}`, pelicula) },
+  delete(id)      { return http.delete(`/api/peliculas/${id}`) },
 
   async toggleActivo(id, activo) {
-    const { data, error } = await supabase
-      .from('peliculas')
-      .update({ activo })
-      .eq('id', id)
-      .select()
-      .single()
-    if (error) throw error
-    return data
+    const pelicula = await http.get(`/api/peliculas/${id}`)
+    return http.put(`/api/peliculas/${id}`, { ...pelicula, activo })
   },
 }

@@ -65,7 +65,7 @@ export default function Usuarios() {
     { key: 'telefono', label: 'Teléfono', width: 130 },
     { key: 'rol', label: 'Rol', width: 110,
       render: u => <span className={`badge ${u.rol === 'admin' ? 'badge-info' : 'badge-neutral'}`}>{u.rol}</span> },
-    { key: 'created_at', label: 'Registro', width: 120, render: u => formatFecha(u.created_at) },
+    { key: 'createdAt', label: 'Registro', width: 120, render: u => formatFecha(u.createdAt) },
     { key: 'acciones', label: '', width: 140,
       render: u => (
         <button className="btn btn-sm btn-ghost" onClick={() => handleCambiarRol(u)}>

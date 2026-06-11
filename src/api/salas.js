@@ -1,45 +1,15 @@
-import { supabase } from './supabase'
+import { http } from './http'
 
 export const salasApi = {
-  async getAll() {
-    const { data, error } = await supabase
-      .from('salas')
-      .select('*, sedes(nombre)')
-      .order('nombre', { referencedTable: 'sedes' })
-      .order('nombre')
-    if (error) throw error
-    return data
-  },
+  getAll()         { return http.get('/api/salas') },
+  getById(id)      { return http.get(`/api/salas/${id}`) },
+  getActivas()     { return http.get('/api/salas/activas') },
+  create(sala)     { return http.post('/api/salas', sala) },
+  update(id, sala) { return http.put(`/api/salas/${id}`, sala) },
+  delete(id)       { return http.delete(`/api/salas/${id}`) },
 
-  async create(sala) {
-    const { data, error } = await supabase
-      .from('salas')
-      .insert([sala])
-      .select()
-      .single()
-    if (error) throw error
-    return data
-  },
-
-  async update(id, sala) {
-    const { data, error } = await supabase
-      .from('salas')
-      .update(sala)
-      .eq('id', id)
-      .select()
-      .single()
-    if (error) throw error
-    return data
-  },
-
-  async toggleActivo(id, valor) {
-    const { data, error } = await supabase
-      .from('salas')
-      .update({ activo: valor })
-      .eq('id', id)
-      .select()
-      .single()
-    if (error) throw error
-    return data
+  async toggleActivo(id, activo) {
+    const sala = await http.get(`/api/salas/${id}`)
+    return http.put(`/api/salas/${id}`, { ...sala, activo })
   },
 }

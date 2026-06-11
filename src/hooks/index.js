@@ -11,15 +11,24 @@ export function usePeliculas() {
 }
 
 export function useFunciones() {
-  return useAsync(() => funcionesApi.getAll())
+  return useAsync(() => funcionesApi.getAllConDetalles())
 }
 
 export function useSedes() {
-  return useAsync(() => sedesApi.getAll())
+  return useAsync(() => sedesApi.getAllConSalas())
 }
 
 export function useSalas() {
-  return useAsync(() => salasApi.getAll())
+  return useAsync(async () => {
+    const [salas, sedes] = await Promise.all([
+      salasApi.getAll(),
+      sedesApi.getAll()
+    ])
+    return salas.map(sala => ({
+      ...sala,
+      sedes: sedes.find(s => s.id === sala.sedeId) ?? null
+    }))
+  })
 }
 
 export function useUsuarios(rol) {
@@ -27,5 +36,5 @@ export function useUsuarios(rol) {
 }
 
 export function useReservas() {
-  return useAsync(() => reservasApi.getAll())
+  return useAsync(() => reservasApi.getAllConDetalles())
 }

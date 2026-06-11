@@ -36,7 +36,7 @@ function SedeForm({ inicial, onGuardar, onCancelar }) {
 }
 
 function SalaForm({ sedeId, inicial, onGuardar, onCancelar }) {
-  const VACIO = { sede_id: sedeId, nombre: '', capacidad: '', tipo_sala: '2D', activo: true }
+  const VACIO = { sedeId: sedeId, nombre: '', capacidad: '', tipoSala: '2D', activo: true }
   const [form, setForm] = useState(inicial ? { ...VACIO, ...inicial } : VACIO)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -54,7 +54,7 @@ function SalaForm({ sedeId, inicial, onGuardar, onCancelar }) {
       <div className="form-row">
         <div className="field"><label className="label">Capacidad *</label><input type="number" className="input" value={form.capacidad} onChange={e => set('capacidad', e.target.value)} required min={1} /></div>
         <div className="field"><label className="label">Tipo</label>
-          <select className="input" value={form.tipo_sala} onChange={e => set('tipo_sala', e.target.value)}>
+          <select className="input" value={form.tipoSala} onChange={e => set('tipoSala', e.target.value)}>
             {['2D','3D','IMAX','4DX'].map(t => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>

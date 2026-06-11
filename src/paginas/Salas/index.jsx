@@ -9,7 +9,7 @@ import StatusBadge from '../../componentes/common/StatusBadge'
 const TIPOS = ['2D', '3D', 'IMAX', '4DX']
 
 function SalaForm({ inicial, sedes, onGuardar, onCancelar }) {
-  const VACIO = { nombre: '', sede_id: '', capacidad: '', tipo_sala: '2D' }
+  const VACIO = { nombre: '', sedeId: '', capacidad: '', tipoSala: '2D' }
   const [form, setForm] = useState(inicial ? { ...VACIO, ...inicial } : VACIO)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -50,8 +50,8 @@ function SalaForm({ inicial, sedes, onGuardar, onCancelar }) {
         <label className="label">Sede *</label>
         <select
           className="input"
-          value={form.sede_id}
-          onChange={e => set('sede_id', e.target.value)}
+          value={form.sedeId}
+          onChange={e => set('sedeId', e.target.value)}
           required
         >
           <option value="">Seleccionar sede...</option>
@@ -77,8 +77,8 @@ function SalaForm({ inicial, sedes, onGuardar, onCancelar }) {
           <label className="label">Tipo</label>
           <select
             className="input"
-            value={form.tipo_sala}
-            onChange={e => set('tipo_sala', e.target.value)}
+            value={form.tipoSala}
+            onChange={e => set('tipoSala', e.target.value)}
           >
             {TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
@@ -121,7 +121,7 @@ export default function Salas() {
     { key: 'nombre', label: 'Sala' },
     { key: 'sedes', label: 'Sede', width: 150, render: s => s.sedes?.nombre },
     { key: 'capacidad', label: 'Capacidad', width: 100 },
-    { key: 'tipo_sala', label: 'Tipo', width: 80 },
+    { key: 'tipoSala', label: 'Tipo', width: 80 },
     { key: 'activo', label: 'Estado', width: 100,
       render: s => <StatusBadge estado={s.activo ? 'ACTIVA' : 'INACTIVA'} />
     },

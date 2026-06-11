@@ -1,29 +1,26 @@
-import { useAsync } from '../../hooks/useAsync'
-import { generosApi } from '../../api/generos'
+import { GENEROS } from '../../constants/generos'
 
-export default function GeneroSelector({ seleccionados, onChange }) {
-  const { data: generos, loading } = useAsync(() => generosApi.getAll())
-
-  function toggleGenero(id) {
-    if (seleccionados.includes(id)) {
-      onChange(seleccionados.filter(g => g !== id))
+// seleccionados: string[] — array de nombres de género
+// onChange: (string[]) => void
+export default function GeneroSelector({ seleccionados = [], onChange }) {
+  function toggleGenero(nombre) {
+    if (seleccionados.includes(nombre)) {
+      onChange(seleccionados.filter(g => g !== nombre))
     } else {
-      onChange([...seleccionados, id])
+      onChange([...seleccionados, nombre])
     }
   }
 
-  if (loading) return <div className="generos-loading">Cargando géneros...</div>
-
   return (
     <div className="generos-grid">
-      {generos?.map(g => (
+      {GENEROS.map(nombre => (
         <button
-          key={g.id}
+          key={nombre}
           type="button"
-          className={`genero-chip ${seleccionados.includes(g.id) ? 'selected' : ''}`}
-          onClick={() => toggleGenero(g.id)}
+          className={`genero-chip ${seleccionados.includes(nombre) ? 'selected' : ''}`}
+          onClick={() => toggleGenero(nombre)}
         >
-          {g.nombre}
+          {nombre}
         </button>
       ))}
     </div>

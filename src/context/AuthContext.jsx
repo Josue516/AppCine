@@ -1,51 +1,72 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { supabase } from '../api/supabase'
+import {
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from 'firebase/auth'
+import { auth } from '../api/firebase'
+import { http } from '../api/http'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [perfil, setPerfil] = useState(null) // fila de la tabla usuarios
+  const [user, setUser]     = useState(null)
+  const [perfil, setPerfil] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Sesión actual al montar
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      if (session?.user) fetchPerfil(session.user.id)
-      else setLoading(false)
-    })
-
-    // Escucha cambios de sesión
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-      if (session?.user) fetchPerfil(session.user.id)
-      else {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setUser(firebaseUser)
+      if (firebaseUser) {
+        await fetchPerfil(firebaseUser.uid)
+      } else {
         setPerfil(null)
         setLoading(false)
       }
     })
-
-    return () => subscription.unsubscribe()
+    return () => unsubscribe()
   }, [])
 
-  async function fetchPerfil(userId) {
-    const { data } = await supabase
-      .from('usuarios')
-      .select('*')
-      .eq('id', userId)
-      .single()
-    setPerfil(data)
-    setLoading(false)
+  async function fetchPerfil(uid) {
+    try {
+      const todos = await http.get('/api/usuarios')
+      const data = Array.isArray(todos)
+        ? (todos.find(u => u.id === uid) ?? null)
+        : null
+      setPerfil(data)
+    } catch (err) {
+      console.warn('[AuthContext] error al cargar perfil:', err.message)
+      setPerfil(null)
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function login(email, password) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) throw error
+    const credential = await signInWithEmailAndPassword(auth, email, password)
+    
+    // Verificar que el usuario es admin antes de permitir el acceso
+    try {
+      const todos = await http.get('/api/usuarios')
+      const perfil = Array.isArray(todos)
+        ? todos.find(u => u.id === credential.user.uid)
+        : null
+
+      if (!perfil || perfil.rol !== 'admin') {
+        await signOut(auth)
+        throw new Error('Acceso denegado. Solo administradores pueden ingresar.')
+      }
+    } catch (err) {
+      // Si el error es el que lanzamos nosotros, lo re-lanzamos
+      if (err.message.includes('Acceso denegado')) throw err
+      // Si es un error de red al obtener perfil, cerramos sesión por seguridad
+      await signOut(auth)
+      throw new Error('No se pudo verificar el perfil. Intenta de nuevo.')
+    }
   }
 
   async function logout() {
-    await supabase.auth.signOut()
+    await signOut(auth)
   }
 
   const isAdmin = perfil?.rol === 'admin'

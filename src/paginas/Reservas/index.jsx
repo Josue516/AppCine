@@ -14,17 +14,16 @@ export default function Reservas() {
   }
 
   const columns = [
-    { key: 'id', label: '#', width: 60 },
-    { key: 'usuario', label: 'Cliente', render: r => r.usuarios ? `${r.usuarios.nombres} ${r.usuarios.apellidos}` : '—' },
-    { key: 'funcion', label: 'Película', render: r => r.funciones?.peliculas?.titulo ?? '—' },
+    { key: 'usuario', label: 'Cliente', render: r => r.usuario ? `${r.usuario.nombres} ${r.usuario.apellidos}` : '—' },
+    { key: 'funcion', label: 'Película', render: r => r.funcion?.pelicula?.titulo ?? '—' },
     { key: 'sede', label: 'Sede / Sala', render: r => {
-      const f = r.funciones
-      return f ? `${f.salas?.sedes?.nombre ?? '—'} / ${f.salas?.nombre ?? '—'}` : '—'
+      const f = r.funcion
+      return f ? `${f.sala?.sede?.nombre ?? '—'} / ${f.sala?.nombre ?? '—'}` : '—'
     }},
-    { key: 'cantidad_boletos', label: 'Boletos', width: 80 },
+    { key: 'cantidadBoletos', label: 'Boletos', width: 80 },
     { key: 'total', label: 'Total', width: 90, render: r => formatMoneda(r.total) },
     { key: 'estado', label: 'Estado', width: 120, render: r => <StatusBadge estado={r.estado} /> },
-    { key: 'created_at', label: 'Fecha', width: 110, render: r => formatFecha(r.created_at) },
+    { key: 'createdAt', label: 'Fecha', width: 110, render: r => formatFecha(r.createdAt) },
     { key: 'acciones', label: '', width: 180,
       render: r => r.estado === 'PENDIENTE' ? (
         <div className="table-actions">

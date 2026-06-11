@@ -1,21 +1,25 @@
 import { useAsync } from '../../hooks/useAsync'
-import { supabase } from '../../api/supabase'
+import { http } from '../../api/http'
 import PageHeader from '../../componentes/common/PageHeader'
 
 function useStats() {
   return useAsync(async () => {
     const [peliculas, funciones, usuarios, reservas] = await Promise.all([
-      supabase.from('peliculas').select('id', { count: 'exact', head: true }),
-      supabase.from('funciones').select('id', { count: 'exact', head: true }).eq('estado', 'ACTIVA'),
-      supabase.from('usuarios').select('id', { count: 'exact', head: true }),
-      supabase.from('reservas').select('total').eq('estado', 'CONFIRMADA'),
+      http.get('/api/peliculas'),
+      http.get('/api/funciones'),
+      http.get('/api/usuarios'),
+      http.get('/api/reservas'),
     ])
-    const totalIngresos = reservas.data?.reduce((s, r) => s + Number(r.total), 0) ?? 0
+
+    const totalIngresos = reservas
+      .filter(r => r.estado === 'CONFIRMADA')
+      .reduce((s, r) => s + Number(r.total ?? 0), 0)
+
     return {
-      peliculas: peliculas.count ?? 0,
-      funciones: funciones.count ?? 0,
-      usuarios: usuarios.count ?? 0,
-      ingresos: totalIngresos,
+      peliculas: peliculas.filter(p => p.activo).length,
+      funciones: funciones.filter(f => f.estado === 'ACTIVA').length,
+      usuarios:  usuarios.length,
+      ingresos:  totalIngresos,
     }
   })
 }
@@ -38,12 +42,12 @@ export default function Dashboard() {
       <PageHeader title="Dashboard" subtitle="Resumen general del sistema" />
 
       <div className="stats-grid">
-        <StatCard label="Películas activas" value={loading ? '…' : stats?.peliculas} icon="🎬" />
-        <StatCard label="Funciones activas" value={loading ? '…' : stats?.funciones} icon="📅" />
-        <StatCard label="Usuarios registrados" value={loading ? '…' : stats?.usuarios} icon="👥" />
+        <StatCard label="Películas activas"      value={loading ? '…' : stats?.peliculas} icon="🎬" />
+        <StatCard label="Funciones activas"      value={loading ? '…' : stats?.funciones} icon="📅" />
+        <StatCard label="Usuarios registrados"   value={loading ? '…' : stats?.usuarios}  icon="👥" />
         <StatCard
           label="Ingresos confirmados"
-          value={loading ? '…' : `$${stats?.ingresos.toFixed(2)}`}
+          value={loading ? '…' : `${stats?.ingresos?.toFixed(2) ?? '0.00'}`}
           icon="💰"
         />
       </div>

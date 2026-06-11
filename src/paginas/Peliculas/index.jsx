@@ -31,12 +31,13 @@ export default function Peliculas() {
 
   const columns = [
     { key: 'titulo', label: 'Título' },
-    { key: 'genero', label: 'Género', width: 120 },
+    { key: 'generos', label: 'Géneros', width: 150,
+      render: p => Array.isArray(p.generos) ? p.generos.join(', ') : '—' },
     { key: 'clasificacion', label: 'Clasificación', width: 110 },
-    { key: 'duracion_minutos', label: 'Duración', width: 100,
-      render: p => p.duracion_minutos ? `${p.duracion_minutos} min` : '—' },
-    { key: 'fecha_estreno', label: 'Estreno', width: 120,
-      render: p => formatFecha(p.fecha_estreno) },
+    { key: 'duracionMinutos', label: 'Duración', width: 100,
+      render: p => p.duracionMinutos ? `${p.duracionMinutos} min` : '—' },
+    { key: 'fechaEstreno', label: 'Estreno', width: 120,
+      render: p => formatFecha(p.fechaEstreno) },
     { key: 'activo', label: 'Estado', width: 100,
       render: p => <StatusBadge estado={p.activo ? 'ACTIVA' : 'CANCELADA'} /> },
     { key: 'acciones', label: '', width: 160,

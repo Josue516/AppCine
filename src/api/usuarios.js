@@ -1,58 +1,20 @@
-import { supabase } from './supabase'
+import { http } from './http'
 
 export const usuariosApi = {
-  async getAll() {
-    const { data, error } = await supabase
-      .from('usuarios')
-      .select('*')
-      .order('created_at', { ascending: false })
-    if (error) throw error
-    return data
+  getAll()              { return http.get('/api/usuarios') },
+  getById(id)           { return http.get(`/api/usuarios/${id}`) },
+  getActivos()          { return http.get('/api/usuarios/activos') },
+  create(usuario)       { return http.post('/api/usuarios', usuario) },
+  update(id, usuario)   { return http.put(`/api/usuarios/${id}`, usuario) },
+  delete(id)            { return http.delete(`/api/usuarios/${id}`) },
+
+  setRol(id, rol) {
+    return http.put(`/api/usuarios/${id}`, { rol })
   },
 
+  // Filtra en el frontend según el rol si no hay endpoint específico por rol
   async getByRol(rol) {
-    const { data, error } = await supabase
-      .from('usuarios')
-      .select('*')
-      .eq('rol', rol)
-      .order('created_at', { ascending: false })
-    if (error) throw error
-    return data
-  },
-
-  async create(usuario) {
-    // Primero crea el auth user en Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-      email: usuario.email,
-      password: usuario.password,
-      email_confirm: true,
-    })
-    if (authError) throw authError
-
-    // Luego inserta en la tabla usuarios con el mismo UUID
-    const { data, error } = await supabase
-      .from('usuarios')
-      .insert([{
-        id: authData.user.id,
-        nombres: usuario.nombres,
-        apellidos: usuario.apellidos,
-        telefono: usuario.telefono,
-        rol: usuario.rol,
-      }])
-      .select()
-      .single()
-    if (error) throw error
-    return data
-  },
-
-  async setRol(id, rol) {
-    const { data, error } = await supabase
-      .from('usuarios')
-      .update({ rol })
-      .eq('id', id)
-      .select()
-      .single()
-    if (error) throw error
-    return data
+    const todos = await http.get('/api/usuarios')
+    return todos.filter(u => u.rol === rol)
   },
 }

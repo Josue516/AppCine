@@ -2,13 +2,18 @@ import { useState } from 'react'
 import GeneroSelector from '../../componentes/common/GeneroSelector'
 
 const VACIO = {
-  titulo: '', sinopsis: '', duracion_minutos: '',
-  clasificacion: '', fecha_estreno: '', imagen_url: '', activo: true,
+  titulo: '',
+  sinopsis: '',
+  duracionMinutos: '',
+  clasificacion: '',
+  fechaEstreno: '',
+  imagenUrl: '',
+  activo: true,
+  generos: [],
 }
 
-export default function PeliculaForm({ inicial, generosIniciales = [], onGuardar, onCancelar }) {
+export default function PeliculaForm({ inicial, onGuardar, onCancelar }) {
   const [form, setForm] = useState(inicial ? { ...VACIO, ...inicial } : VACIO)
-  const [generoIds, setGeneroIds] = useState(generosIniciales)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
@@ -23,8 +28,7 @@ export default function PeliculaForm({ inicial, generosIniciales = [], onGuardar
     try {
       await onGuardar({
         ...form,
-        duracion_minutos: form.duracion_minutos ? Number(form.duracion_minutos) : null,
-        generoIds,
+        duracionMinutos: form.duracionMinutos ? Number(form.duracionMinutos) : null,
       })
     } catch (err) {
       setError(err.message)
@@ -39,23 +43,40 @@ export default function PeliculaForm({ inicial, generosIniciales = [], onGuardar
 
       <div className="field">
         <label className="label">Título *</label>
-        <input className="input" value={form.titulo} onChange={e => set('titulo', e.target.value)} required />
+        <input
+          className="input"
+          value={form.titulo}
+          onChange={e => set('titulo', e.target.value)}
+          required
+        />
       </div>
 
       <div className="field">
         <label className="label">Sinopsis</label>
-        <textarea className="input textarea" value={form.sinopsis} onChange={e => set('sinopsis', e.target.value)} rows={3} />
+        <textarea
+          className="input textarea"
+          value={form.sinopsis}
+          onChange={e => set('sinopsis', e.target.value)}
+          rows={3}
+        />
       </div>
 
       <div className="field">
         <label className="label">Géneros</label>
-        <GeneroSelector seleccionados={generoIds} onChange={setGeneroIds} />
+        <GeneroSelector
+          seleccionados={form.generos}
+          onChange={val => set('generos', val)}
+        />
       </div>
 
       <div className="form-row">
         <div className="field">
           <label className="label">Clasificación</label>
-          <select className="input" value={form.clasificacion} onChange={e => set('clasificacion', e.target.value)}>
+          <select
+            className="input"
+            value={form.clasificacion}
+            onChange={e => set('clasificacion', e.target.value)}
+          >
             <option value="">Seleccionar</option>
             {['G', 'PG', 'PG-13', 'R', 'NC-17', 'ATP', '+7', '+13', '+18'].map(c => (
               <option key={c} value={c}>{c}</option>
@@ -64,18 +85,35 @@ export default function PeliculaForm({ inicial, generosIniciales = [], onGuardar
         </div>
         <div className="field">
           <label className="label">Duración (minutos)</label>
-          <input type="number" className="input" value={form.duracion_minutos} onChange={e => set('duracion_minutos', e.target.value)} min={1} />
+          <input
+            type="number"
+            className="input"
+            value={form.duracionMinutos}
+            onChange={e => set('duracionMinutos', e.target.value)}
+            min={1}
+          />
         </div>
       </div>
 
       <div className="field">
         <label className="label">Fecha de estreno</label>
-        <input type="date" className="input" value={form.fecha_estreno} onChange={e => set('fecha_estreno', e.target.value)} />
+        <input
+          type="date"
+          className="input"
+          value={form.fechaEstreno}
+          onChange={e => set('fechaEstreno', e.target.value)}
+        />
       </div>
 
       <div className="field">
         <label className="label">URL de imagen</label>
-        <input type="url" className="input" value={form.imagen_url} onChange={e => set('imagen_url', e.target.value)} placeholder="https://..." />
+        <input
+          type="url"
+          className="input"
+          value={form.imagenUrl}
+          onChange={e => set('imagenUrl', e.target.value)}
+          placeholder="https://..."
+        />
       </div>
 
       <div className="form-actions">
