@@ -8,8 +8,5 @@ export const salasApi = {
   update(id, sala) { return http.put(`/api/salas/${id}`, sala) },
   delete(id)       { return http.delete(`/api/salas/${id}`) },
 
-  async toggleActivo(id, activo) {
-    const sala = await http.get(`/api/salas/${id}`)
-    return http.put(`/api/salas/${id}`, { ...sala, activo })
-  },
+  toggleActivo(id) { return http.patch(`/api/salas/${id}/activo`) },
 }

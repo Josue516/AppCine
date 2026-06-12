@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser)
       if (firebaseUser) {
-        await fetchPerfil(firebaseUser.uid)
+      await fetchPerfil(firebaseUser)
       } else {
         setPerfil(null)
         setLoading(false)
@@ -27,49 +27,44 @@ export function AuthProvider({ children }) {
     return () => unsubscribe()
   }, [])
 
-  async function fetchPerfil(uid) {
-    try {
-      const todos = await http.get('/api/usuarios')
-      const data = Array.isArray(todos)
-        ? (todos.find(u => u.id === uid) ?? null)
-        : null
-      setPerfil(data)
-    } catch (err) {
-      console.warn('[AuthContext] error al cargar perfil:', err.message)
-      setPerfil(null)
-    } finally {
-      setLoading(false)
-    }
+  async function fetchPerfil(firebaseUser) {
+  try {
+    const token = await firebaseUser.getIdToken(true)
+    const data = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }).then(r => r.json())
+    setPerfil(data)
+  } catch (err) {
+    console.warn('[AuthContext] error al cargar perfil:', err.message)
+    setPerfil(null)
+  } finally {
+    setLoading(false)
   }
+}
 
   async function login(email, password) {
-    const credential = await signInWithEmailAndPassword(auth, email, password)
-    
-    // Verificar que el usuario es admin antes de permitir el acceso
-    try {
-      const todos = await http.get('/api/usuarios')
-      const perfil = Array.isArray(todos)
-        ? todos.find(u => u.id === credential.user.uid)
-        : null
+  const credential = await signInWithEmailAndPassword(auth, email, password)
+  const token = await credential.user.getIdToken()
+  
+  const data = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` }
+  }).then(r => r.json())
 
-      if (!perfil || perfil.rol !== 'admin') {
-        await signOut(auth)
-        throw new Error('Acceso denegado. Solo administradores pueden ingresar.')
-      }
-    } catch (err) {
-      // Si el error es el que lanzamos nosotros, lo re-lanzamos
-      if (err.message.includes('Acceso denegado')) throw err
-      // Si es un error de red al obtener perfil, cerramos sesión por seguridad
-      await signOut(auth)
-      throw new Error('No se pudo verificar el perfil. Intenta de nuevo.')
-    }
+  if (!data || data.rol !== 'ADMIN') {
+    await signOut(auth)
+    throw new Error('Acceso denegado. Solo administradores pueden ingresar.')
   }
+}
 
   async function logout() {
     await signOut(auth)
   }
 
-  const isAdmin = perfil?.rol === 'admin'
+  const isAdmin = perfil?.rol === 'ADMIN'
 
   return (
     <AuthContext.Provider value={{ user, perfil, loading, isAdmin, login, logout }}>

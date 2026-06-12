@@ -1,6 +1,18 @@
 import { useState } from 'react'
 import GeneroSelector from '../../componentes/common/GeneroSelector'
 
+const CLASIFICACIONES = [
+  { label: 'G',      value: 'G' },
+  { label: 'PG',     value: 'PG' },
+  { label: 'PG-13',  value: 'PG_13' },
+  { label: 'R',      value: 'R' },
+  { label: 'NC-17',  value: 'NC_17' },
+  { label: 'ATP',    value: 'ATP' },
+  { label: '+7',     value: 'MAYORES_7' },
+  { label: '+13',    value: 'MAYORES_13' },
+  { label: '+18',    value: 'MAYORES_18' },
+]
+
 const VACIO = {
   titulo: '',
   sinopsis: '',
@@ -13,7 +25,10 @@ const VACIO = {
 }
 
 export default function PeliculaForm({ inicial, onGuardar, onCancelar }) {
-  const [form, setForm] = useState(inicial ? { ...VACIO, ...inicial } : VACIO)
+  const [form, setForm] = useState(inicial ? {...VACIO,...inicial,
+  fechaEstreno: inicial.fechaEstreno ? new Date(inicial.fechaEstreno).toISOString().split('T')[0]
+    : ''
+} : VACIO)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
@@ -29,7 +44,8 @@ export default function PeliculaForm({ inicial, onGuardar, onCancelar }) {
       await onGuardar({
         ...form,
         duracionMinutos: form.duracionMinutos ? Number(form.duracionMinutos) : null,
-      })
+        fechaEstreno: form.fechaEstreno ? new Date(form.fechaEstreno).getTime() : null,
+        })
     } catch (err) {
       setError(err.message)
     } finally {
@@ -77,11 +93,11 @@ export default function PeliculaForm({ inicial, onGuardar, onCancelar }) {
             value={form.clasificacion}
             onChange={e => set('clasificacion', e.target.value)}
           >
-            <option value="">Seleccionar</option>
-            {['G', 'PG', 'PG-13', 'R', 'NC-17', 'ATP', '+7', '+13', '+18'].map(c => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
+          <option value="">Seleccionar</option>
+          {CLASIFICACIONES.map(({ label, value }) => (
+          <option key={value} value={value}>{label}</option>
+        ))}
+        </select>
         </div>
         <div className="field">
           <label className="label">Duración (minutos)</label>

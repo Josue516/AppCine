@@ -17,5 +17,6 @@ export const sedesApi = {
   getSalasActivas()       { return http.get('/api/salas/activas') },
   createSala(sala)        { return http.post('/api/salas', sala) },
   updateSala(id, sala)    { return http.put(`/api/salas/${id}`, sala) },
+  toggleActivoSala(id) { return http.patch(`/api/salas/${id}/activo`) },
   deleteSala(id)          { return http.delete(`/api/salas/${id}`) },
 }

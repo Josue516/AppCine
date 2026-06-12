@@ -18,7 +18,7 @@ export default function Peliculas() {
   function cerrar() { setModalOpen(false); setEditando(null) }
 
   async function handleToggle(p) {
-    await peliculasApi.toggleActivo(p.id, !p.activo)
+    await peliculasApi.toggleActivo(p.id)
     refetch()
   }
 

@@ -5,57 +5,101 @@ import Table from '../../componentes/common/Table'
 import Modal from '../../componentes/common/Modal'
 import PageHeader from '../../componentes/common/PageHeader'
 import StatusBadge from '../../componentes/common/StatusBadge'
-
+import { TIPOS_SALA } from '../../constants/tiposSala'
 function SedeForm({ inicial, onGuardar, onCancelar }) {
   const VACIO = { nombre: '', direccion: '', ciudad: '', telefono: '', activo: true }
   const [form, setForm] = useState(inicial ? { ...VACIO, ...inicial } : VACIO)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+
   function set(k, v) { setForm(f => ({ ...f, [k]: v })) }
+
   async function handleSubmit(e) {
     e.preventDefault(); setLoading(true); setError(null)
-    try { await onGuardar(form) }
-    catch (err) { setError(err.message) }
-    finally { setLoading(false) }
+    try {
+      await onGuardar(form)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
+
   return (
     <form onSubmit={handleSubmit} className="form">
       {error && <div className="alert alert-danger">{error}</div>}
-      <div className="field"><label className="label">Nombre *</label><input className="input" value={form.nombre} onChange={e => set('nombre', e.target.value)} required /></div>
-      <div className="field"><label className="label">Dirección</label><input className="input" value={form.direccion} onChange={e => set('direccion', e.target.value)} /></div>
+      <div className="field">
+        <label className="label">Nombre *</label>
+        <input className="input" value={form.nombre} onChange={e => set('nombre', e.target.value)} required />
+      </div>
+      <div className="field">
+        <label className="label">Dirección</label>
+        <input className="input" value={form.direccion} onChange={e => set('direccion', e.target.value)} />
+      </div>
       <div className="form-row">
-        <div className="field"><label className="label">Ciudad</label><input className="input" value={form.ciudad} onChange={e => set('ciudad', e.target.value)} /></div>
-        <div className="field"><label className="label">Teléfono</label><input className="input" value={form.telefono} onChange={e => set('telefono', e.target.value)} /></div>
+        <div className="field">
+          <label className="label">Ciudad</label>
+          <input className="input" value={form.ciudad} onChange={e => set('ciudad', e.target.value)} />
+        </div>
+        <div className="field">
+          <label className="label">Teléfono</label>
+          <input className="input" value={form.telefono} onChange={e => set('telefono', e.target.value)} />
+        </div>
       </div>
       <div className="form-actions">
         <button type="button" className="btn btn-ghost" onClick={onCancelar}>Cancelar</button>
-        <button type="submit" className="btn btn-primary" disabled={loading}>{loading ? 'Guardando...' : 'Guardar'}</button>
+        <button type="submit" className="btn btn-primary" disabled={loading}>
+          {loading ? 'Guardando...' : 'Guardar'}
+        </button>
       </div>
     </form>
   )
 }
-
 function SalaForm({ sedeId, inicial, onGuardar, onCancelar }) {
-  const VACIO = { sedeId: sedeId, nombre: '', capacidad: '', tipoSala: '2D', activo: true }
+  const VACIO = { sedeId: sedeId, nombre: '', filas: '', columnas: '', tipoSala: 'DOS_D', activo: true }
   const [form, setForm] = useState(inicial ? { ...VACIO, ...inicial } : VACIO)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+
   function set(k, v) { setForm(f => ({ ...f, [k]: v })) }
+
   async function handleSubmit(e) {
     e.preventDefault(); setLoading(true); setError(null)
-    try { await onGuardar({ ...form, capacidad: Number(form.capacidad) }) }
-    catch (err) { setError(err.message) }
-    finally { setLoading(false) }
+    try {
+      await onGuardar({
+        ...form,
+        filas: Number(form.filas),
+        columnas: Number(form.columnas),
+      })
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
+
   return (
     <form onSubmit={handleSubmit} className="form">
       {error && <div className="alert alert-danger">{error}</div>}
-      <div className="field"><label className="label">Nombre *</label><input className="input" value={form.nombre} onChange={e => set('nombre', e.target.value)} required /></div>
+      <div className="field">
+        <label className="label">Nombre *</label>
+        <input className="input" value={form.nombre} onChange={e => set('nombre', e.target.value)} required />
+      </div>
       <div className="form-row">
-        <div className="field"><label className="label">Capacidad *</label><input type="number" className="input" value={form.capacidad} onChange={e => set('capacidad', e.target.value)} required min={1} /></div>
-        <div className="field"><label className="label">Tipo</label>
+        <div className="field">
+          <label className="label">Filas *</label>
+          <input type="number" className="input" value={form.filas} onChange={e => set('filas', e.target.value)} required min={1} />
+        </div>
+        <div className="field">
+          <label className="label">Columnas *</label>
+          <input type="number" className="input" value={form.columnas} onChange={e => set('columnas', e.target.value)} required min={1} />
+        </div>
+        <div className="field">
+          <label className="label">Tipo</label>
           <select className="input" value={form.tipoSala} onChange={e => set('tipoSala', e.target.value)}>
-            {['2D','3D','IMAX','4DX'].map(t => <option key={t} value={t}>{t}</option>)}
+            {TIPOS_SALA.map(({ label, value }) => (
+            <option key={value} value={value}>{label}</option>
+            ))}
           </select>
         </div>
       </div>
@@ -100,7 +144,6 @@ export default function Sedes() {
       )
     },
   ]
-
   return (
     <div className="page">
       <PageHeader

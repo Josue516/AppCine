@@ -5,15 +5,13 @@ import Table from '../../componentes/common/Table'
 import Modal from '../../componentes/common/Modal'
 import PageHeader from '../../componentes/common/PageHeader'
 import StatusBadge from '../../componentes/common/StatusBadge'
-
-const TIPOS = ['2D', '3D', 'IMAX', '4DX']
+import { TIPOS_SALA } from '../../constants/tiposSala'
 
 function SalaForm({ inicial, sedes, onGuardar, onCancelar }) {
-  const VACIO = { nombre: '', sedeId: '', capacidad: '', tipoSala: '2D' }
+  const VACIO = {nombre: '', sedeId: '', filas: '', columnas: '', tipoSala: 'DOS_D',}
   const [form, setForm] = useState(inicial ? { ...VACIO, ...inicial } : VACIO)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-
   function set(k, v) { setForm(f => ({ ...f, [k]: v })) }
 
   async function handleSubmit(e) {
@@ -60,30 +58,42 @@ function SalaForm({ inicial, sedes, onGuardar, onCancelar }) {
           ))}
         </select>
       </div>
-
-      <div className="form-row">
-        <div className="field">
-          <label className="label">Capacidad *</label>
-          <input
-            type="number"
-            className="input"
-            value={form.capacidad}
-            onChange={e => set('capacidad', e.target.value)}
-            required
-            min={1}
-          />
-        </div>
-        <div className="field">
-          <label className="label">Tipo</label>
-          <select
-            className="input"
-            value={form.tipoSala}
-            onChange={e => set('tipoSala', e.target.value)}
-          >
-            {TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
-          </select>
-        </div>
-      </div>
+  <div className="form-row">
+  <div className="field">
+    <label className="label">Filas *</label>
+    <input
+      type="number"
+      className="input"
+      value={form.filas}
+      onChange={e => set('filas', e.target.value)}
+      required
+      min={1}
+    />
+  </div>
+  <div className="field">
+    <label className="label">Columnas *</label>
+    <input
+      type="number"
+      className="input"
+      value={form.columnas}
+      onChange={e => set('columnas', e.target.value)}
+      required
+      min={1}
+    />
+  </div>
+  <div className="field">
+    <label className="label">Tipo</label>
+    <select
+      className="input"
+      value={form.tipoSala}
+      onChange={e => set('tipoSala', e.target.value)}
+    >
+      {TIPOS_SALA.map(({ label, value }) => (
+        <option key={value} value={value}>{label}</option>
+      ))}
+    </select>
+  </div>
+</div>
 
       <div className="form-actions">
         <button type="button" className="btn btn-ghost" onClick={onCancelar}>Cancelar</button>
@@ -106,9 +116,9 @@ export default function Salas() {
   function cerrar() { setModalOpen(false); setEditando(null) }
 
   async function handleToggle(sala) {
-    await salasApi.toggleActivo(sala.id, !sala.activo)
+    await salasApi.toggleActivo(sala.id)
     refetch()
-  }
+}
 
   async function handleGuardar(datos) {
     if (editando) await salasApi.update(editando.id, datos)
@@ -119,7 +129,7 @@ export default function Salas() {
 
   const columns = [
     { key: 'nombre', label: 'Sala' },
-    { key: 'sedes', label: 'Sede', width: 150, render: s => s.sedes?.nombre },
+    { key: 'sede', label: 'Sede', width: 150, render: s => s.sede?.nombre },
     { key: 'capacidad', label: 'Capacidad', width: 100 },
     { key: 'tipoSala', label: 'Tipo', width: 80 },
     { key: 'activo', label: 'Estado', width: 100,

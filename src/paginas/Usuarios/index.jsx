@@ -30,8 +30,8 @@ function UsuarioForm({ onGuardar, onCancelar }) {
         <div className="field"><label className="label">Teléfono</label><input className="input" value={form.telefono} onChange={e => set('telefono', e.target.value)} /></div>
         <div className="field"><label className="label">Rol *</label>
           <select className="input" value={form.rol} onChange={e => set('rol', e.target.value)}>
-            <option value="cliente">Cliente</option>
-            <option value="admin">Administrador</option>
+            <option value="CLIENTE">Cliente</option>
+            <option value="ADMIN">Administrador</option>
           </select>
         </div>
       </div>
@@ -48,7 +48,9 @@ export default function Usuarios() {
   const [filtroRol, setFiltroRol] = useState('todos')
   const [modalOpen, setModalOpen] = useState(false)
 
-  const filtrados = filtroRol === 'todos' ? usuarios : usuarios?.filter(u => u.rol === filtroRol)
+  const filtrados = filtroRol === 'todos' 
+    ? usuarios 
+    : usuarios?.filter(u => u.rol === filtroRol.toUpperCase())
 
   async function handleCrear(datos) {
     await usuariosApi.create(datos)
@@ -56,7 +58,7 @@ export default function Usuarios() {
   }
 
   async function handleCambiarRol(u) {
-    const nuevoRol = u.rol === 'admin' ? 'cliente' : 'admin'
+    const nuevoRol = u.rol === 'ADMIN' ? 'CLIENTE' : 'ADMIN'
     await usuariosApi.setRol(u.id, nuevoRol); refetch()
   }
 
@@ -64,12 +66,12 @@ export default function Usuarios() {
     { key: 'nombre', label: 'Nombre', render: u => `${u.nombres} ${u.apellidos}` },
     { key: 'telefono', label: 'Teléfono', width: 130 },
     { key: 'rol', label: 'Rol', width: 110,
-      render: u => <span className={`badge ${u.rol === 'admin' ? 'badge-info' : 'badge-neutral'}`}>{u.rol}</span> },
+      render: u => <span className={`badge ${u.rol === 'ADMIN' ? 'badge-info' : 'badge-neutral'}`}>{u.rol}</span> },
     { key: 'createdAt', label: 'Registro', width: 120, render: u => formatFecha(u.createdAt) },
     { key: 'acciones', label: '', width: 140,
       render: u => (
         <button className="btn btn-sm btn-ghost" onClick={() => handleCambiarRol(u)}>
-          {u.rol === 'admin' ? 'Quitar admin' : 'Hacer admin'}
+          {u.rol === 'ADMIN' ? 'Quitar admin' : 'Hacer admin'}
         </button>
       )
     },

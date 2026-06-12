@@ -3,24 +3,24 @@ import { GENEROS } from '../../constants/generos'
 // seleccionados: string[] — array de nombres de género
 // onChange: (string[]) => void
 export default function GeneroSelector({ seleccionados = [], onChange }) {
-  function toggleGenero(nombre) {
-    if (seleccionados.includes(nombre)) {
-      onChange(seleccionados.filter(g => g !== nombre))
+  function toggleGenero(value) {
+    if (seleccionados.includes(value)) {
+      onChange(seleccionados.filter(g => g !== value))
     } else {
-      onChange([...seleccionados, nombre])
+      onChange([...seleccionados, value])
     }
   }
 
   return (
     <div className="generos-grid">
-      {GENEROS.map(nombre => (
+      {GENEROS.map(({ label, value }) => (
         <button
-          key={nombre}
+          key={value}
           type="button"
-          className={`genero-chip ${seleccionados.includes(nombre) ? 'selected' : ''}`}
-          onClick={() => toggleGenero(nombre)}
+          className={`genero-chip ${seleccionados.includes(value) ? 'selected' : ''}`}
+          onClick={() => toggleGenero(value)}
         >
-          {nombre}
+          {label}
         </button>
       ))}
     </div>

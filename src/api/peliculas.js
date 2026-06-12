@@ -8,8 +8,7 @@ export const peliculasApi = {
   update(id, pelicula) { return http.put(`/api/peliculas/${id}`, pelicula) },
   delete(id)      { return http.delete(`/api/peliculas/${id}`) },
 
-  async toggleActivo(id, activo) {
-    const pelicula = await http.get(`/api/peliculas/${id}`)
-    return http.put(`/api/peliculas/${id}`, { ...pelicula, activo })
-  },
+  async toggleActivo(id) {
+    return http.patch(`/api/peliculas/${id}/activo`)
+}
 }
