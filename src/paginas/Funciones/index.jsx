@@ -20,7 +20,10 @@ function FuncionForm({ inicial, onGuardar, onCancelar }) {
   if (!inicial) return VACIO
   return {
     ...VACIO,
-    ...inicial,
+    peliculaId: inicial.pelicula?.id ?? inicial.peliculaId ?? '',
+    salaId: inicial.sala?.id ?? inicial.salaId ?? '',
+    precio: inicial.precio ?? '',
+    estado: inicial.estado ?? 'ACTIVA',
     fechaHora: inicial.fechaHora
       ? new Date(inicial.fechaHora).toISOString().slice(0, 16)
       : ''
