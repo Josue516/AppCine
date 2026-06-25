@@ -52,7 +52,7 @@ const columns = [
     { key: 'acciones', label: '', width: 180,
       render: r => r.estado === 'PENDIENTE' ? (
         <div className="table-actions">
-          <button className="btn btn-sm btn-success" onClick={() => handleEstado(r, 'CONFIRMADA')}>Confirmar</button>
+          <button className="btn btn-sm btn-success" onClick={() => handleEstado(r, 'PAGADA')}>Confirmar</button>
           <button className="btn btn-sm btn-ghost" onClick={() => handleEstado(r, 'CANCELADA')}>Cancelar</button>
         </div>
       ) : null

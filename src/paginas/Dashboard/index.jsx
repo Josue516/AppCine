@@ -12,7 +12,7 @@ function useStats() {
     ])
 
     const totalIngresos = reservas
-      .filter(r => r.estado === 'CONFIRMADA')
+      .filter(r => r.estado === 'PAGADA')
       .reduce((s, r) => s + Number(r.total ?? 0), 0)
 
     return {

@@ -7,7 +7,9 @@ export const reservasApi = {
   getAllConDetalles() { return http.get('/api/reservas/con-detalles') },
   delete(id)             { return http.delete(`/api/reservas/${id}`) },
 
-  updateEstado(id, estado) {
-    return http.put(`/api/reservas/${id}/estado?estado=${estado}`);
-  }
+// En tu reservas.js (o donde declares updateEstado):
+updateEstado(id, estado) {
+  // Usamos el nuevo método que viaja sin body y no causa el ReferenceError
+  return http.putParams(`/api/reservas/${id}/estado?estado=${estado}`);
+}
 }
