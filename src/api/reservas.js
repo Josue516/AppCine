@@ -8,6 +8,6 @@ export const reservasApi = {
   delete(id)             { return http.delete(`/api/reservas/${id}`) },
 
   updateEstado(id, estado) {
-    return http.put(`/api/reservas/${id}/estado`, { estado: estado })
-  },
+    return http.put(`/api/reservas/${id}/estado?estado=${estado}`);
+  }
 }
