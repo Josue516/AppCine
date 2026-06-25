@@ -131,7 +131,13 @@ export default function Salas() {
     { key: 'nombre', label: 'Sala' },
     { key: 'sede', label: 'Sede', width: 150, render: s => s.sede?.nombre },
     { key: 'capacidad', label: 'Capacidad', width: 100 },
-    { key: 'tipoSala', label: 'Tipo', width: 80 },
+    {
+    key: 'tipoSala',
+    label: 'Tipo',
+    width: 80,
+    render: s =>
+    TIPOS_SALA.find(t => t.value === s.tipoSala)?.label ?? s.tipoSala
+    },
     { key: 'activo', label: 'Estado', width: 100,
       render: s => <StatusBadge estado={s.activo ? 'ACTIVA' : 'INACTIVA'} />
     },
