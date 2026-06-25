@@ -12,8 +12,20 @@ export default function Reservas() {
     await reservasApi.updateEstado(r.id, estado)
     refetch()
   }
-
-  const columns = [
+const formatFechaHora = (fechaString) => {
+  if (!fechaString) return '—'
+  const d = new Date(fechaString)
+  // Ajusta el formato a tu gusto (24h o AM/PM)
+  return d.toLocaleDateString('es-PE', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  })
+}
+const columns = [
     { key: 'usuario', label: 'Cliente', render: r => r.usuario ? `${r.usuario.nombres} ${r.usuario.apellidos}` : '—' },
     { key: 'funcion', label: 'Película', render: r => r.funcion?.pelicula?.titulo ?? '—' },
     { key: 'sede', label: 'Sede / Sala', render: r => {
@@ -23,7 +35,20 @@ export default function Reservas() {
     { key: 'cantidadBoletos', label: 'Boletos', width: 80 },
     { key: 'total', label: 'Total', width: 90, render: r => formatMoneda(r.total) },
     { key: 'estado', label: 'Estado', width: 120, render: r => <StatusBadge estado={r.estado} /> },
-    { key: 'createdAt', label: 'Fecha', width: 110, render: r => formatFecha(r.createdAt) },
+    
+    { 
+  key: 'fechaFuncion', 
+  label: 'F. Función', 
+  width: 160, // Incrementamos un poco el ancho para que quepa la hora limpia
+  render: r => r.funcion?.fechaHora ? formatFechaHora(r.funcion.fechaHora) : '—' 
+},
+{ 
+  key: 'createdAt', 
+  label: 'F. Compra', 
+  width: 160, 
+  render: r => formatFechaHora(r.createdAt) 
+},
+    
     { key: 'acciones', label: '', width: 180,
       render: r => r.estado === 'PENDIENTE' ? (
         <div className="table-actions">
